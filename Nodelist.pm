@@ -6,6 +6,7 @@
 # under the same terms as Perl itself.
 
 # History:
+#  1.03  2005/02/25 Cache problem fixed
 #  1.02  2005/02/22 Perl license added
 #                   Pointlist processing added
 #                   Documentation improved
@@ -110,7 +111,7 @@ our @EXPORT_OK = qw//;
 our %EXPORT_TAGS = ();
 our @ISA = qw/Exporter/;
 
-$FTN::Nodelist::VERSION = "1.02";
+$FTN::Nodelist::VERSION = "1.03";
 
 use File::Spec;
 use File::Basename;
@@ -134,7 +135,9 @@ sub new {
     $filename =~ s/\.\*$/.\\d\\d\\d/;
 
     if (opendir(DIR, $directory)) {
-      my ($ndl, @rest) = sort {$b cmp $a} grep { /^$filename/ && -f "$directory/$_" } readdir(DIR);
+      my ($ndl, @rest) = sort {$b cmp $a}
+                          grep { /^$filename/ && -f "$directory/$_" }
+                           readdir(DIR);
       $ndlfile = File::Spec->catfile($directory, $ndl);
       closedir DIR;
     } else {
@@ -152,7 +155,8 @@ sub new {
   $self->{'__ndlfile'} = $ndlfile;
 
   $self->{'__cache'} = 1; # cache search results by default
-  $self->{'__cache'} = $attr{'-cache'}; # may be overriden
+                          # but may be overriden
+  $self->{'__cache'} = $attr{'-cache'} if exists $attr{'-cache'};
 
   bless $self ;
   return $self;
