@@ -1,0 +1,11 @@
+# http://module-build.sourceforge.net/META-spec.html
+#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
+name:         FTN-Nodelist
+version:      1.01
+version_from: Nodelist.pm
+installdirs:  site
+requires:
+    FTN::Address:                  1.01
+
+distribution_type: module
+generated_by: ExtUtils::MakeMaker version 6.17
