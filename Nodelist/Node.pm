@@ -6,11 +6,12 @@
 # under the same terms as Perl itself.
 
 # History:
+#  1.02  2005/02/22 Documentation improved
 #  1.01  2005/02/16 Initial revision
 
 =head1 NAME
 
-FTN::Nodelist::Node -- manipulate node information in FTN nodelist
+FTN::Nodelist::Node - Manipulate node information in FTN nodelist
 
 =head1 SYNOPSIS
 
@@ -23,16 +24,17 @@ FTN::Nodelist::Node -- manipulate node information in FTN nodelist
 
 =head1 DESCRIPTION
 
-FTN::Nodelist::Node contains functions that can be used to get information
+C<FTN::Nodelist::Node> contains functions that can be used to get information
 about node entry in Fidonet Technology Network nodelist.
 
 =head1 METHODS
 
 =head2 new
 
-This method creates FTN::Nodelist::Node object.
+This method creates C<FTN::Nodelist::Node> object.
 
-You should not use it anyway, since it is used from FTN::Nodelist.
+You should not use it anyway, since it is used from C<FTN::Nodelist>.
+See L<FTN::Nodelist> for details. 
 
 =cut 
 
@@ -139,7 +141,7 @@ sub sysop {
 
 Returns FTN node phone number (PSTN/ISDN)
 
-Can also contains '-Unpublished-' value or 000-IP address.
+Can also contains C<'-Unpublished-'> value or 000-IP address.
 
 =cut
 
@@ -176,12 +178,14 @@ sub flags {
 
 Serguei Trouchelle E<lt>F<stro@railways.dp.ua>E<gt>
 
-=head1 COPYRIGHT
-
-Copyright (c) 2005 Serguei Trouchelle. All rights reserved.
+=head1 LICENSE
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
+
+=head1 COPYRIGHT
+
+Copyright (c) 2005 Serguei Trouchelle. All rights reserved.
 
 =cut
 

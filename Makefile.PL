@@ -5,7 +5,7 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
   'NAME'          => 'FTN::Nodelist',
-  'ABSTRACT'      => 'FTN Nodelist processing',
+  'ABSTRACT'      => 'Process FTN Nodelist',
   'AUTHOR'        => 'Serguei Trouchelle <stro@railways.dp.ua>',
   'VERSION_FROM'  => 'Nodelist.pm',
   'PREREQ_PM' => {

@@ -6,11 +6,14 @@
 # under the same terms as Perl itself.
 
 # History:
+#  1.02  2005/02/22 Perl license added
+#                   Pointlist processing added
+#                   Documentation improved
 #  1.01  2005/02/16 Initial revision
 
 =head1 NAME
 
-FTN::Nodelist -- process FTN nodelist
+FTN::Nodelist - Process FTN nodelist
 
 =head1 SYNOPSIS
 
@@ -23,25 +26,23 @@ FTN::Nodelist -- process FTN nodelist
 
 =head1 DESCRIPTION
 
-FTN::Nodelist contains functions that can be used to process Fidonet
-Technology Network nodelist.
+C<FTN::Nodelist> contains functions that can be used to process Fidonet
+Technology Network nodelist and pointlist.
 
 =head1 METHODS
 
 =head2 new
 
-This method creates FTN::Nodelist object.
+This method creates C<FTN::Nodelist> object.
 Can get following arguments:
-
 
 Nodelist file path:
 
  -file => '/path/to/nodelist'
 
-Path can point to definite file (ex.: '/var/ndl/nodelist.357') or contain
+Path can point to definite file (ex.: C<'/var/ndl/nodelist.357'>) or contain
 wildcard (.*) instead of digital extension. Maximum extension value will be
-used to find exact nodelist (ex.: '/var/ndl/nodelist.*')
-
+used to find exact nodelist (ex.: C<'/var/ndl/nodelist.*'>)
 
 Cacheable status:
 
@@ -49,41 +50,48 @@ Cacheable status:
 
 Default is 1. When cacheable status is set to 1, all search results are
 stored in object cache. It saves resources when searching the same address,
-but eats memory to store results. Choose appropriate behaviuor depending on
+but eats memory to store results. Choose appropriate behaviour depending on
 your tasks.
 
 =head2 getNode( $addr )
 
-Takes FTN address as argument. Address can be feed in 3D style only
-(Zone:Net/Node).
+Takes FTN address as argument. Address can be feed in 3D or 4D style
+(Zone:Net/Node, Zone:Net/Node.Point).
 
-Returns FTN::Nodelist::Node object if node can be found in nodelist. 
-See FTN::Nodelist::Node manual for details how these results can be used.
+If 4D style is specified, point address is searching.
+
+Returns C<FTN::Nodelist::Node> object if node can be found in nodelist. 
+
+See L<FTN::Nodelist::Node> for details how these results can be used.
 
 Examples:
 
   my $node = $ndl->getNode('2:550/0');
   my $node = $ndl->getNode('2:2/0');
   my $node = $ndl->getNode('2:550/4077');
+  my $node = $ndl->getNode('2:550/4077.101');
 
 =head1 KNOWN ISSUES
 
-When using wildcard in nodediff path, maximum extension is taken into
+When using wildcard in nodelist path, maximum extension is taken into
 account. It may bring to wrong results when there are many nodelist files
-and current nodelist has lesser number (for example, nodelist.365 and
-nodelist.006).
-This issue may be resolved in next versions of FTN::Nodelist.
+and current nodelist has lesser number (for example, C<nodelist.365> and
+C<nodelist.006>).
+
+This issue may be resolved in next versions of C<FTN::Nodelist>.
 
 =head1 AUTHORS
 
 Serguei Trouchelle E<lt>F<stro@railways.dp.ua>E<gt>
 
-=head1 COPYRIGHT
-
-Copyright (c) 2005 Serguei Trouchelle. All rights reserved.
+=head1 LICENSE
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
+
+=head1 COPYRIGHT
+
+Copyright (c) 2005 Serguei Trouchelle. All rights reserved.
 
 =cut
 
@@ -102,7 +110,7 @@ our @EXPORT_OK = qw//;
 our %EXPORT_TAGS = ();
 our @ISA = qw/Exporter/;
 
-$FTN::Nodelist::VERSION = "1.01";
+$FTN::Nodelist::VERSION = "1.02";
 
 use File::Spec;
 use File::Basename;
@@ -161,16 +169,59 @@ sub getNode {
   }
 
   if (my $addr = new FTN::Address($node)) {
-    if ($addr->{'p'}) { # Points are not in nodelist
-      return undef;
-    }
+    if ($addr->{'p'}) {
+      # Points are not in nodelist
+      # Process boss/boss-point format pointlists...
+      if (open (F, '<' . $self->{'__ndlfile'})) {
+        my $found;
+
+        PNT:
+        while(<F>) {
+          next if /^;/; # strip comments
+          if (m!^Boss,(\d+):(\d+)/(\d+)!
+                and $1 eq $addr->{'z'} 
+                and $2 eq $addr->{'n'}        
+                and $3 eq $addr->{'f'} ) {
+            while(<F>) {
+              next if /^;/; # strip comments
+              if (((/^,(\d+),/) or
+                   (/^Point,(\d+),/) or
+                   0
+                  ) and ($addr->{'p'} == $1)) {
+                $found = $_;
+                last PNT;
+              }
+
+              last PNT if /^Boss/; # Not found
+            }
+          }
+        }
+
+        close(F);
+        if ($found)  {
+          chomp $found;
+          my $node = new FTN::Nodelist::Node($addr, $found);
+          # cache result if needed
+          $self->{'__nodes'}->{$node->address()} = $node if $self->{'__cache'};
+          return $node;
+        } else {
+          # We will search point-format in nodelist
+        }
+      } else {
+        $@ = 'Cannot read nodelist ' . $@;
+        return undef;
+      }
+    } 
+
+    # Process nodelist
+
     if (open (F, '<' . $self->{'__ndlfile'})) {
       my $found;
 
       NDL:
 
       while(<F>) {
-        next if /^#/; # strip comments
+        next if /^;/; # strip comments
         if ((/^Zone,(\d+),/) and ($addr->{'z'} == $1)) {
           if ($addr->{'z'} eq $addr->{'n'} and $addr->{'f'} == 0) {
             $found = $_;
@@ -178,6 +229,7 @@ sub getNode {
           }
           my $reg;
           while(<F>) {
+            next if /^;/; # strip comments
             $reg = 1 if /^Region,/;
             if ((/^Region,(\d+),/ or
                  /^Host,(\d+),/
@@ -189,6 +241,7 @@ sub getNode {
               }
 
               while(<F>) {
+                next if /^;/; # strip comments
                 if (((/^,(\d+),/) or
                      (/^Hub,(\d+),/) or
                      (/^Pvt,(\d+),/) or
@@ -205,6 +258,21 @@ sub getNode {
               $found = $_;
               last NDL;
             }
+          }
+        }
+      }
+
+      if ($addr->{'p'}) {
+        # Search for point (point-format)
+        undef $found; # Don't need boss-node
+        while(<F>) {
+          next if /^;/; # strip comments
+          last if /^((Zone)|(Region)|(Host)|(Hub)|(Pvt)|(Hold)|(Down))?,/;
+                  # Next node found
+          if (/^Point,(\d+),/
+               and $1 == $addr->{'p'}) {
+            $found = $_;
+            last;
           }
         }
       }
