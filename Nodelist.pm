@@ -6,6 +6,7 @@
 # under the same terms as Perl itself.
 
 # History:
+#  1.04  2005/09/29 Fixed problem with missing nodelist
 #  1.03  2005/02/25 Cache problem fixed
 #  1.02  2005/02/22 Perl license added
 #                   Pointlist processing added
@@ -111,7 +112,7 @@ our @EXPORT_OK = qw//;
 our %EXPORT_TAGS = ();
 our @ISA = qw/Exporter/;
 
-$FTN::Nodelist::VERSION = "1.03";
+$FTN::Nodelist::VERSION = "1.04";
 
 use File::Spec;
 use File::Basename;
@@ -138,8 +139,14 @@ sub new {
       my ($ndl, @rest) = sort {$b cmp $a}
                           grep { /^$filename/ && -f "$directory/$_" }
                            readdir(DIR);
-      $ndlfile = File::Spec->catfile($directory, $ndl);
       closedir DIR;
+      if (defined $ndl) {
+        $ndlfile = File::Spec->catfile($directory, $ndl);
+      } else {
+        $@ = 'Cannot find file ' . $ndlfile;
+        return undef;
+      }
+
     } else {
       # failed to read directory
       $@ = 'Cannot read directory ' . $directory;

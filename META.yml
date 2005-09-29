@@ -1,6 +1,6 @@
 # http://module-build.sourceforge.net/META-spec.html
 name:         FTN-Nodelist
-version:      1.03
+version:      1.04
 version_from: Nodelist.pm
 license:      perl
 installdirs:  site
