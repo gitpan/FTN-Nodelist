@@ -1,11 +1,12 @@
 # FTN/Nodelist.pm
 #
-# Copyright (c) 2005 Serguei Trouchelle. All rights reserved.
+# Copyright (c) 2005-2007 Serguei Trouchelle. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the same terms as Perl itself.
 
 # History:
+#  1.06  2007/02/04 Quality update (Test::Pod, Test::Pod::Coverage)
 #  1.05  2005/09/29 Fixed problem with non-existing node
 #  1.04  2005/09/29 Fixed problem with missing nodelist
 #  1.03  2005/02/25 Cache problem fixed
@@ -94,7 +95,7 @@ under the same terms as Perl itself.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005 Serguei Trouchelle. All rights reserved.
+Copyright (c) 2005-2007 Serguei Trouchelle. All rights reserved.
 
 =cut
 
@@ -113,7 +114,7 @@ our @EXPORT_OK = qw//;
 our %EXPORT_TAGS = ();
 our @ISA = qw/Exporter/;
 
-$FTN::Nodelist::VERSION = "1.05";
+$FTN::Nodelist::VERSION = "1.06";
 
 use File::Spec;
 use File::Basename;
