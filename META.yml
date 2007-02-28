@@ -1,8 +1,8 @@
 --- #YAML:1.0
 name:                FTN-Nodelist
-version:             1.06
+version:             1.07
 abstract:            Process FTN Nodelist
-license:             ~
+license:             perl
 generated_by:        ExtUtils::MakeMaker version 6.31
 distribution_type:   module
 requires:     

@@ -6,6 +6,7 @@
 # under the same terms as Perl itself.
 
 # History:
+#  1.07  2007/02/28 License added
 #  1.06  2007/02/04 Quality update (Test::Pod, Test::Pod::Coverage)
 #  1.05  2005/09/29 Fixed problem with non-existing node
 #  1.04  2005/09/29 Fixed problem with missing nodelist
@@ -114,7 +115,7 @@ our @EXPORT_OK = qw//;
 our %EXPORT_TAGS = ();
 our @ISA = qw/Exporter/;
 
-$FTN::Nodelist::VERSION = "1.06";
+$FTN::Nodelist::VERSION = "1.07";
 
 use File::Spec;
 use File::Basename;

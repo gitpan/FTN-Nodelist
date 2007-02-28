@@ -8,6 +8,7 @@ WriteMakefile(
   'ABSTRACT'      => 'Process FTN Nodelist',
   'AUTHOR'        => 'Serguei Trouchelle <stro@railways.dp.ua>',
   'VERSION_FROM'  => 'Nodelist.pm',
+  'LICENSE'       => 'perl',
   'PREREQ_PM' => {
       'FTN::Address' => 1.01,
   },
